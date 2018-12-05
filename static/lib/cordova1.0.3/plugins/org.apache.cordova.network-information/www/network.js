@@ -1,0 +1,6 @@
+cordova.define("org.apache.cordova.network-information.network",function(require,exports,module){var exec=require('cordova/exec'),cordova=require('cordova'),channel=require('cordova/channel'),utils=require('cordova/utils');if(typeof navigator!='undefined'){utils.defineGetter(navigator,'onLine',function(){return this.connection.type!='none';});}
+    function NetworkConnection(){this.type='unknown';}
+    NetworkConnection.prototype.getInfo=function(successCallback,errorCallback){exec(successCallback,errorCallback,"NetworkStatus","getConnectionInfo",[]);};var me=new NetworkConnection();var timerId=null;var timeout=500;channel.createSticky('onCordovaConnectionReady');channel.waitForInitialization('onCordovaConnectionReady');channel.onCordovaReady.subscribe(function(){me.getInfo(function(info){me.type=info;if(info==="none"){timerId=setTimeout(function(){cordova.fireDocumentEvent("offline");timerId=null;},timeout);}else{if(timerId!==null){clearTimeout(timerId);timerId=null;}
+        cordova.fireDocumentEvent("online");}
+        if(channel.onCordovaConnectionReady.state!==2){channel.onCordovaConnectionReady.fire();}},function(e){if(channel.onCordovaConnectionReady.state!==2){channel.onCordovaConnectionReady.fire();}
+        console.log("Error initializing Network Connection: "+e);});});module.exports=me;});

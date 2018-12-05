@@ -1,0 +1,1 @@
+在1.0.2的基础上增加setNavButton
